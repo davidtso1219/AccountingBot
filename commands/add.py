@@ -97,7 +97,8 @@ class Add(commands.Cog):
             color = Color.from_rgb(255, 0, 0)
 
         await ctx.send(embed=Embed(title=title, color=color))
-        server.push(**info)
+        print(info)
+        # server.push(**info)
 
 
     async def emoji_confirm(self, ctx, msg):
