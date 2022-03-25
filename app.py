@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask
 from threading import Thread
 
 app = Flask('accounting bot')
@@ -14,6 +14,3 @@ def keep_alive():
 	print("keep alive..")
 	t = Thread(target=run)
 	t.start()
-
-def create_app():
-	return app
