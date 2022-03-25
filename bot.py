@@ -1,7 +1,7 @@
 import os
+from app import keep_alive
 from discord import Intents
 from dotenv import load_dotenv
-from keep_alive import keep_alive
 from discord.ext.commands import Bot
 
 load_dotenv()
