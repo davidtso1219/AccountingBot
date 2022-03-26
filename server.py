@@ -9,7 +9,12 @@ def query(command, args=None):
         with connection:
             cursor = connection.cursor()
             cursor.execute(command, args)
-            data = cursor.fetchall()
+
+            try:
+                data = cursor.fetchall()
+            except psycopg2.ProgrammingError:
+                data = None
+
             connection.commit()
 
     except psycopg2.Error as e:
