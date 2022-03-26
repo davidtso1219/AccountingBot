@@ -2,6 +2,12 @@ import pytz
 from discord import Color
 from datetime import datetime, timedelta
 
+def get_args(info, columns):
+    args = []
+    for c in columns:
+        args.append(info[c])
+    return args
+
 async def validate_author(author, msg, embed):
     '''
     '''

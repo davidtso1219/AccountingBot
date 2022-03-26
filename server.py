@@ -1,18 +1,66 @@
-import sqlite3
+import os, psycopg2
+from utils import get_args
 
-connection = sqlite3.connect("accounting.db")
-cursor = connection.cursor()
+URI = os.getenv('DATABASE_URL')
 
-def push(price, month, day, year, cat, det, user):
-    command = 'INSERT INTO records (price, month, day, year, user, category, detail) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    cursor.execute(command, (price, month, day, year, user, cat, det))
-    connection.commit()
+def query(command, args=None):
+    try:
+        connection = psycopg2.connect(URI)
+        with connection:
+            cursor = connection.cursor()
+            cursor.execute(command, args)
+            data = cursor.fetchall()
+            connection.commit()
+
+    except psycopg2.Error as e:
+        print(f'Had problem connecting with error {e}.')
+        raise ValueError('Could not connect to database')
+
+    finally:
+
+        if connection:
+            connection.rollback()
+
+        if data:
+            return data
+
+def push(**info):
+    '''
+    price, month, day, year, cat, det, name
+    '''
+    command = 'INSERT INTO records (price, month, day, year, name, category, detail) VALUES (%s, %s, %s, %s, %s, %s, %s);'
+    columns = ['price', 'month', 'day', 'year', 'name', 'cat', 'det']
+    args = get_args(info, columns)
+    query(command, args)
 
 def show_all():
-    rows = cursor.execute("SELECT * FROM records").fetchall()
+    command = "SELECT * FROM records;"
+    rows = query(command)
     print(rows)
 
-def total(month, day, year, user):
-    command = 'SELECT SUM(price) FROM records WHERE month = ? AND day = ? AND year = ? AND user = ?;'
-    sum_price = cursor.execute(command, (month, day, year, user)).fetchone()[0]
-    return sum_price if sum_price else 0
+def total(**info):
+    '''
+    month, day, year, name
+    '''
+    command = 'SELECT SUM(price) FROM records WHERE month = %s AND day = %s AND year = %s AND name = %s;'
+    columns = ['month', 'day', 'year', 'name']
+    args = get_args(info, columns)
+    data = query(command, args)
+    sum_price = data[0][0] if data[0][0] else 0
+    return sum_price
+
+def create():
+    command = "DROP TABLE IF EXISTS records"
+    query(command)
+    command = '''create table records (
+    _id serial primary key,
+    price float,
+    month int,
+    day int,
+    year int,
+    name varchar(10),
+    category varchar(20),
+    detail varchar(100)
+    );
+    '''
+    query(command)

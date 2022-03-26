@@ -21,7 +21,7 @@ async def total(ctx, date : str =''):
     if not time_info:
         return
 
-    info = {"user": author}
+    info = {"name": author}
     types = ['month', 'day', 'year']
     for i in range(3):
         info[types[i]] = int(time_info[i])
