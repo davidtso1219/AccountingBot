@@ -26,7 +26,6 @@ async def total(ctx, date : str =''):
         return
 
     info = {"name": author, **time_info}
-    print(info)
     sum_price = server.total(**info)
     embed.description = f':money_with_wings: You have spent **{sum_price}** '
     embed.description += f'{ "TWD" if author != "daaviid" else "dollars"} '
