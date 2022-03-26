@@ -26,6 +26,7 @@ async def total(ctx, date : str =''):
     for i in range(3):
         info[types[i]] = int(time_info[i])
 
-    sum_price = server.total(**info)
+    # sum_price = server.total(**info)
+    sum_price = 0
     embed.description = f':money_with_wings: You have spent **{sum_price}** { "TWD" if author != "daaviid" else "dollars"} on **{info["month"]}/{info["day"]}/{info["year"]}**'
     await ctx.send(embed=embed)
