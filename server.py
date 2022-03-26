@@ -47,8 +47,13 @@ def total(**info):
     '''
     month, day, year, name
     '''
-    command = 'SELECT SUM(price) FROM records WHERE month = %s AND day = %s AND year = %s AND name = %s;'
-    columns = ['month', 'day', 'year', 'name']
+    if info['day']:
+        command = 'SELECT SUM(price) FROM records WHERE month = %s AND day = %s AND year = %s AND name = %s;'
+        columns = ['month', 'day', 'year', 'name']
+    else:
+        command = 'SELECT SUM(price) FROM records WHERE month = %s AND year = %s AND name = %s;'
+        columns = ['month', 'year', 'name']
+
     args = get_args(info, columns)
     data = query(command, args)
     sum_price = data[0][0] if data[0][0] else 0
