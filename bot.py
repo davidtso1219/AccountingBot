@@ -24,9 +24,10 @@ async def before_invoke(ctx):
 @bot.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(bot))
+    guild_name = 'my own server' if 'Test' in str(bot.user) else '嵐酉杉 & 藍友三'
 
     for guild in bot.guilds:
-        if guild.name == '嵐酉杉 & 藍友三':
+        if guild.name == guild_name:
             for channel in guild.channels:
                 if channel.name == 'bot-spam':
                     await channel.send(f'{guild.owner.mention} I am restarted.')

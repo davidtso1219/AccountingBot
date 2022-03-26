@@ -2,7 +2,8 @@ import os
 from flask import Flask
 from threading import Thread
 
-app = Flask('accounting bot')
+app = Flask('Accounting Bot')
+# app.cli.add_command(create_tables)
 
 @app.route('/')
 def home():

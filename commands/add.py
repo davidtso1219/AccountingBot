@@ -1,8 +1,7 @@
-import pytz, server
+import server
 from asyncio import TimeoutError
 from discord import Embed, Color
 from discord.ext import commands
-from datetime import datetime, timedelta
 from emojis import cats_emojis, num_emojis
 from utils import get_time_info, validate_author
 
@@ -29,7 +28,7 @@ class Add(commands.Cog):
         embed = Embed(color=Color.from_rgb(255, 204, 153))
 
         # check the authors
-        info['user'] = author
+        info['name'] = author
         if not (await validate_author(author, msg, embed)):
             return
 
