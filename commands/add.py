@@ -1,9 +1,10 @@
 import server
+from constant import *
 from asyncio import TimeoutError
 from discord import Embed, Color
 from discord.ext import commands
 from emojis import cats_emojis, num_emojis
-from utils import get_time_info, validate_author
+from utils import get_time_info, check_author, send_red_warning
 
 def setup(bot):
     bot.add_cog(Add(bot))
@@ -18,31 +19,40 @@ class Add(commands.Cog):
 
         # check if price is provided
         if not price:
-            await ctx.send(f'`Usage: <price> (date: MM/DD/YYYY)`')
+            await ctx.send(f'Usage: `$add <price> (date: MM/DD/YYYY)`')
             return
 
-        info = {'price': float(price)}
+        mega_info = {'price': float(price)}
         author = ctx.author.name
         mention = f'{ctx.author.mention}'
         msg = await ctx.send(mention)
         embed = Embed(color=Color.from_rgb(255, 204, 153))
 
         # check the authors
-        info['name'] = author
-        if not (await validate_author(author, msg, embed)):
+        mega_info['name'] = author
+        if not check_author(author):
+            await send_red_warning(msg, INVALID_AUTHOR)
             return
 
-        time_info = await get_time_info(date, author, msg, embed)
-        if not time_info:
+        #
+        try:
+            time_info = get_time_info(author, date)
+            error = False
+        except ValueError:
+            error = True
+
+        if error or not all(time_info.values()):
+            description = f':warning: `{date}` is **invalid**'
+            await send_red_warning(msg, description)
             return
 
         #
         types = ['month', 'day', 'year']
         embed.title = 'Enter details of this consumption'
         embed.add_field(name='Price', value=price)
-        for i in range(3):
-            embed.add_field(name=types[i].title(), value=time_info[i])
-            info[types[i]] = int(time_info[i])
+        for t in types:
+            embed.add_field(name=t.title(), value=time_info[t])
+            mega_info[t] = int(time_info[t])
         await msg.edit(embed=embed)
 
         #
@@ -54,9 +64,9 @@ class Add(commands.Cog):
             details = await self.bot.wait_for("message", check=check, timeout=20.0)
             details = details.content
         except TimeoutError:
-            await self.close_prompt(ctx, msg)
+            await send_red_warning(msg, INACTIVITY_DESCRIPTION)
             return
-        info['det'] = details
+        mega_info['det'] = details
 
         # create a new embed to get the category
         embed.title = f'Choose one of the categories below'
@@ -68,22 +78,22 @@ class Add(commands.Cog):
         try:
             cat = await self.get_category(ctx)
         except TimeoutError:
-            await self.close_prompt(ctx, msg)
+            await send_red_warning(msg, INACTIVITY_DESCRIPTION)
             return
         except ValueError:
             await msg.delete()
             return
-        info['cat'] = cat
+        mega_info['cat'] = cat
 
         # add category to the embed
         embed.add_field(name='Category', value=cat)
-        embed.title = 'Is the following information is all correct?'
+        embed.title = 'Is the following information all correct?'
         await msg.edit(embed=embed)
 
         try:
             correct = await self.emoji_confirm(ctx, msg)
         except TimeoutError:
-            await self.close_prompt(ctx, msg)
+            await send_red_warning(msg, INACTIVITY_DESCRIPTION)
             return
 
         await msg.delete()
@@ -96,7 +106,7 @@ class Add(commands.Cog):
             color = Color.from_rgb(255, 0, 0)
 
         await ctx.send(embed=Embed(title=title, color=color))
-        server.push(**info)
+        server.push(**mega_info)
 
 
     async def emoji_confirm(self, ctx, msg):
@@ -163,11 +173,4 @@ class Add(commands.Cog):
             raise ValueError()
 
         return cats[num_emojis.index(str(reaction.emoji))]
-
-
-    async def close_prompt(self, ctx, msg):
-        await msg.delete()
-        description = ":no_entry: **Prompt closed due to inactivity.**"
-        color = Color.from_rgb(255, 0, 0)
-        await ctx.send(embed=Embed(description=description, color=color))
 

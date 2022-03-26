@@ -11,7 +11,7 @@ def get_args(info, columns):
 def check_author(author):
     return author == 'daaviid' or author == 'Jamie.lin'
 
-async def send_red_warning(msg, embed, description):
+async def send_red_warning(msg, description):
     await msg.edit(embed=Embed(description=description, color=Color.from_rgb(255, 0, 0)))
     return
 
