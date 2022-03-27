@@ -3,7 +3,7 @@ from utils import get_args
 
 URI = os.getenv('DATABASE_URL')
 
-def query(command, args=None):
+def query(command, args : tuple = None):
     try:
         connection = psycopg2.connect(URI)
         with connection:
@@ -69,3 +69,11 @@ def create():
     );
     '''
     query(command)
+
+def get_last_record(author):
+    command = 'select * from records where _id = (select max(_id) from records) and name = %s;'
+    return query(command, [author])
+
+def delete(id):
+    command = 'delete from records where _id = %s;'
+    return query(command, [id])

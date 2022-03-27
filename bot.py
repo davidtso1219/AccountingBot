@@ -11,7 +11,8 @@ extensions = [
     'commands.add',
     'commands.reload',
     'commands.create',
-    'commands.total'
+    'commands.total',
+    'commands.delete'
 ]
 
 
