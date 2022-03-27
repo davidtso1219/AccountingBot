@@ -8,7 +8,12 @@ def query(command, args : tuple = None):
         connection = psycopg2.connect(URI)
         with connection:
             cursor = connection.cursor()
-            cursor.execute(command, args)
+
+            try:
+                cursor.execute(command, args)
+            except Exception as e:
+                print(e, '\n', command, '\n', args)
+                raise e
 
             try:
                 data = cursor.fetchall()

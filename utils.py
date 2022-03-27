@@ -1,4 +1,5 @@
 import pytz
+from constant import *
 from discord import Color, Embed
 from datetime import datetime, timedelta
 
@@ -81,3 +82,15 @@ async def confirm_emoji(ctx, msg):
         raise TimeoutError()
 
     return str(reaction.emoji) == emojis[0]
+
+def get_embed_from_record(title, last_record):
+    embed = Embed(title=title, color=Color.from_rgb(255, 204, 153))
+    embed.description = get_details_field(last_record[COLUMNS.index('details')])
+    columns = ['price', 'month', 'day', 'year']
+
+    for c in columns:
+        embed.add_field(name=c.title(), value=last_record[COLUMNS.index(c)])
+
+    id = last_record[0]
+    embed.add_field(name='ID', value=id)
+    return embed

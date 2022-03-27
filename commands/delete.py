@@ -2,7 +2,7 @@ import database
 from constant import *
 from discord import Embed, Color
 from discord.ext import commands
-from utils import check_author, send_red_warning, get_details_field, confirm_emoji
+from utils import check_author, send_red_warning, confirm_emoji, get_embed_from_record
 
 def setup(bot):
     bot.add_command(delete)
@@ -27,14 +27,8 @@ async def delete(ctx):
 
     #
     last_record = last_record[0]
-    embed.title = 'Is this the one you want to delete?'
-    embed.description = get_details_field(last_record[COLUMNS.index('details')])
-    columns = ['price', 'month', 'day', 'year']
-    for c in columns:
-        embed.add_field(name=c.title(), value=last_record[COLUMNS.index(c)])
-
-    id = last_record[0]
-    embed.add_field(name='ID', value=id)
+    title = 'Is this the one you want to delete?'
+    embed = get_embed_from_record(title, last_record)
     await msg.edit(embed=embed)
 
     #
@@ -44,6 +38,7 @@ async def delete(ctx):
         await send_red_warning(msg, INACTIVITY_DESCRIPTION)
         return
 
+    id = last_record[0]
     database.delete(id)
     await msg.clear_reactions()
     embed = Embed(description=':white_check_mark:  **That Record Is Deleted!**', color=Color.green())
