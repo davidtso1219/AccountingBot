@@ -4,7 +4,7 @@ from asyncio import TimeoutError
 from discord import Embed, Color
 from discord.ext import commands
 from emojis import cats_emojis, num_emojis
-from utils import get_time_info, check_author, send_red_warning
+from utils import get_time_info, check_author, send_red_warning, get_details_field, confirm_emoji
 
 def setup(bot):
     bot.add_cog(Add(bot))
@@ -22,11 +22,17 @@ class Add(commands.Cog):
             await ctx.send(f'Usage: `$add <price> (date: MM/DD/YYYY)`')
             return
 
-        mega_info = {'price': float(price)}
         author = ctx.author.name
         mention = f'{ctx.author.mention}'
         msg = await ctx.send(mention)
         embed = Embed(color=Color.from_rgb(255, 204, 153))
+
+        try:
+            mega_info = {'price': float(price)}
+        except:
+            description = f':warning: `{price}` is **NOT** a valid price'
+            await send_red_warning(msg, description)
+            return
 
         # check the authors
         mega_info['name'] = author
@@ -41,8 +47,8 @@ class Add(commands.Cog):
         except ValueError:
             error = True
 
-        if error or not all(time_info.values()):
-            description = f':warning: `{date}` is **invalid**'
+        if error or not time_info or not all(time_info.values()):
+            description = f':warning: `{date}` is **NOT** a valid date'
             await send_red_warning(msg, description)
             return
 
@@ -70,7 +76,7 @@ class Add(commands.Cog):
 
         # create a new embed to get the category
         embed.title = f'Choose one of the categories below'
-        embed.description = f'**Detail**\n{details if len(details) < 50 else details[:50] + "..."}'
+        embed.description = get_details_field(details)
         await msg.delete()
         msg = await ctx.send(embed=embed)
 
@@ -91,7 +97,7 @@ class Add(commands.Cog):
         await msg.edit(embed=embed)
 
         try:
-            correct = await self.emoji_confirm(ctx, msg)
+            correct = await confirm_emoji(ctx, msg)
         except TimeoutError:
             await send_red_warning(msg, INACTIVITY_DESCRIPTION)
             return
@@ -108,29 +114,6 @@ class Add(commands.Cog):
         await ctx.send(embed=Embed(title=title, color=color))
         database.add_expense(**mega_info)
 
-
-    async def emoji_confirm(self, ctx, msg):
-        emojis = ['✅', '❌']
-        for emoji in emojis:
-            await msg.add_reaction(emoji)
-
-        def check(reaction, user):
-            emoji = str(reaction.emoji)
-            return (
-                emoji in emojis
-                and user == ctx.author
-                and reaction.message.id == msg.id
-                and user.id != self.bot.user.id
-            )
-
-        try:
-            reaction, user = await ctx.bot.wait_for(
-                "reaction_add", timeout=10.0, check=check
-            )
-        except TimeoutError:
-            raise TimeoutError()
-
-        return str(reaction.emoji) == emojis[0]
 
     async def get_category(self, ctx):
         title = 'Choose categories from the following options'

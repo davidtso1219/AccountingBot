@@ -3,12 +3,17 @@ from utils import get_args
 
 URI = os.getenv('DATABASE_URL')
 
-def query(command, args=None):
+def query(command, args : tuple = None):
     try:
         connection = psycopg2.connect(URI)
         with connection:
             cursor = connection.cursor()
-            cursor.execute(command, args)
+
+            try:
+                cursor.execute(command, args)
+            except Exception as e:
+                print(e, '\n', command, '\n', args)
+                raise e
 
             try:
                 data = cursor.fetchall()
@@ -69,3 +74,23 @@ def create():
     );
     '''
     query(command)
+
+def get_last_record(author):
+    command = 'select * from records where _id = (select max(_id) from records) and name = %s;'
+    return query(command, [author])
+
+def delete(id):
+    command = 'delete from records where _id = %s;'
+    return query(command, [id])
+
+def top(**info):
+    if info['day']:
+        command = 'SELECT * FROM records WHERE month = %s AND day = %s AND year = %s AND name = %s ORDER BY price DESC LIMIT %s;'
+        columns = ['month', 'day', 'year', 'name', 'num']
+    else:
+        command = 'SELECT * FROM records WHERE month = %s AND year = %s AND name = %s ORDER BY price DESC LIMIT %s;'
+        columns = ['month', 'year', 'name', 'num']
+
+    args = get_args(info, columns)
+    data = query(command, args)
+    return data

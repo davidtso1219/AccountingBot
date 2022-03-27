@@ -1,4 +1,3 @@
-from multiprocessing.sharedctypes import Value
 import database
 from constant import *
 from discord import Embed, Color
@@ -17,7 +16,7 @@ async def total(ctx, date : str =''):
     embed = Embed(color=Color.from_rgb(255, 204, 153))
 
     if not check_author(author):
-        await send_red_warning(msg, embed, INVALID_AUTHOR)
+        await send_red_warning(msg, INVALID_AUTHOR)
         return
 
     try:
