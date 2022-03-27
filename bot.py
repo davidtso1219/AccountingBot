@@ -1,6 +1,6 @@
 import os
-from server import keep_alive
 from discord import Intents
+from server import keep_alive
 from dotenv import load_dotenv
 from discord.ext.commands import Bot
 
@@ -10,10 +10,11 @@ bot = Bot(command_prefix='$', intents=intents)
 extensions = [
     'commands.add',
     'commands.reload',
-    'commands.create',
+    'commands.clear',
     'commands.total',
     'commands.delete',
-    'commands.top'
+    'commands.top',
+    'commands.help'
 ]
 
 
@@ -37,6 +38,7 @@ async def on_ready():
 
 if __name__ == '__main__':
     keep_alive()
+    bot.remove_command('help')
     for extension in extensions:
         bot.load_extension(extension)
     bot.run(os.getenv('TOKEN'))

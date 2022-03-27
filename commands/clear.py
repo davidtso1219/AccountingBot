@@ -5,10 +5,10 @@ from discord.ext import commands
 from utils import send_red_warning
 
 def setup(bot):
-    bot.add_command(create)
+    bot.add_command(clear)
 
 @commands.command()
-async def create(ctx):
+async def clear(ctx):
 
     author = ctx.author.name
     mention = f'{ctx.author.mention}'
