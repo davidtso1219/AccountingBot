@@ -1,4 +1,4 @@
-import server
+import database
 from discord import Embed, Color
 from discord.ext import commands
 
@@ -7,6 +7,6 @@ def setup(bot):
 
 @commands.command()
 async def create(ctx):
-    server.create()
+    database.create()
     embed = Embed(description=':white_check_mark:  **New Table Created!**', color=Color.green())
     await ctx.send(embed=embed)

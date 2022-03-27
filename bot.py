@@ -1,5 +1,5 @@
 import os
-from app import keep_alive
+from server import keep_alive
 from discord import Intents
 from dotenv import load_dotenv
 from discord.ext.commands import Bot
@@ -23,7 +23,7 @@ async def before_invoke(ctx):
 # Ready
 @bot.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(bot))
+    print(f'We have logged in as {bot.user}')
     guild_name = 'my own server' if 'Test' in str(bot.user) else '嵐酉杉 & 藍友三'
 
     for guild in bot.guilds:

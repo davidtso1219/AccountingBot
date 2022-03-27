@@ -1,4 +1,4 @@
-import server
+import database
 from constant import *
 from asyncio import TimeoutError
 from discord import Embed, Color
@@ -106,7 +106,7 @@ class Add(commands.Cog):
             color = Color.from_rgb(255, 0, 0)
 
         await ctx.send(embed=Embed(title=title, color=color))
-        server.push(**mega_info)
+        database.add_expense(**mega_info)
 
 
     async def emoji_confirm(self, ctx, msg):

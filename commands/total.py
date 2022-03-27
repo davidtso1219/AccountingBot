@@ -1,5 +1,5 @@
 from multiprocessing.sharedctypes import Value
-import server
+import database
 from constant import *
 from discord import Embed, Color
 from discord.ext import commands
@@ -26,7 +26,7 @@ async def total(ctx, date : str =''):
         return
 
     info = {"name": author, **time_info}
-    sum_price = server.total(**info)
+    sum_price = database.total(**info)
     embed.description = f':money_with_wings: You have spent **{sum_price}** '
     embed.description += f'{ "TWD" if author != "daaviid" else "dollars"} '
     embed.description += f'on **{info["month"]}{("/" + str(info["day"])) if info["day"] else ""}/{info["year"]}**'

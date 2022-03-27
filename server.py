@@ -1,76 +1,19 @@
-import os, psycopg2
-from utils import get_args
+import os
+from flask import Flask, request
+from threading import Thread
+from database import add_expense, total
 
-URI = os.getenv('DATABASE_URL')
+app = Flask('Accounting Bot')
+# app.cli.add_command(create_tables)
 
-def query(command, args=None):
-    try:
-        connection = psycopg2.connect(URI)
-        with connection:
-            cursor = connection.cursor()
-            cursor.execute(command, args)
+@app.route('/')
+def home():
+	return "I'm alive"
 
-            try:
-                data = cursor.fetchall()
-            except psycopg2.ProgrammingError:
-                data = None
+def run():
+	app.run(host='0.0.0.0',port=os.getenv('PORT', 8080))
 
-            connection.commit()
-
-    except psycopg2.Error as e:
-        print(f'Had problem connecting with error {e}.')
-        raise ValueError('Could not connect to database')
-
-    finally:
-
-        if connection:
-            connection.rollback()
-
-        if data:
-            return data
-
-def push(**info):
-    '''
-    price, month, day, year, cat, det, name
-    '''
-    command = 'INSERT INTO records (price, month, day, year, name, category, detail) VALUES (%s, %s, %s, %s, %s, %s, %s);'
-    columns = ['price', 'month', 'day', 'year', 'name', 'cat', 'det']
-    args = get_args(info, columns)
-    query(command, args)
-
-def show_all():
-    command = "SELECT * FROM records;"
-    rows = query(command)
-    print(rows)
-
-def total(**info):
-    '''
-    month, day, year, name
-    '''
-    if info['day']:
-        command = 'SELECT SUM(price) FROM records WHERE month = %s AND day = %s AND year = %s AND name = %s;'
-        columns = ['month', 'day', 'year', 'name']
-    else:
-        command = 'SELECT SUM(price) FROM records WHERE month = %s AND year = %s AND name = %s;'
-        columns = ['month', 'year', 'name']
-
-    args = get_args(info, columns)
-    data = query(command, args)
-    sum_price = data[0][0] if data[0][0] else 0
-    return sum_price
-
-def create():
-    command = "DROP TABLE IF EXISTS records"
-    query(command)
-    command = '''create table records (
-    _id serial primary key,
-    price float,
-    month int,
-    day int,
-    year int,
-    name varchar(10),
-    category varchar(20),
-    detail varchar(100)
-    );
-    '''
-    query(command)
+def keep_alive():
+	print("keep alive..")
+	t = Thread(target=run)
+	t.start()
