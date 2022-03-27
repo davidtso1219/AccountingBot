@@ -42,7 +42,7 @@ def get_time_info(author, date=''):
     check if the date from the user is valid
     '''
     time_info = {}
-    formats = ["%m/%d/%Y", "%m/%d/%y", "%m/%Y", "%m/%y", "%m/%d"]
+    formats = ["%m/%d/%Y", "%m/%d/%y", "%m/%d", "%m/%Y", "%m/%y"]
 
     # if date is provided
     if date:
@@ -85,7 +85,7 @@ async def confirm_emoji(ctx, msg):
 
 def get_embed_from_record(title, last_record):
     embed = Embed(title=title, color=Color.from_rgb(255, 204, 153))
-    embed.description = get_details_field(last_record[COLUMNS.index('details')])
+    embed.description = get_details_field(last_record[COLUMNS.index('detail')])
     columns = ['price', 'month', 'day', 'year']
 
     for c in columns:

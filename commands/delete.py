@@ -9,6 +9,7 @@ def setup(bot):
 
 @commands.command()
 async def delete(ctx):
+
     author = ctx.author.name
     mention = f'{ctx.author.mention}'
     msg = await ctx.send(mention)

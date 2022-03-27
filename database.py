@@ -82,3 +82,15 @@ def get_last_record(author):
 def delete(id):
     command = 'delete from records where _id = %s;'
     return query(command, [id])
+
+def top(**info):
+    if info['day']:
+        command = 'SELECT * FROM records WHERE month = %s AND day = %s AND year = %s AND name = %s ORDER BY price DESC LIMIT %s;'
+        columns = ['month', 'day', 'year', 'name', 'num']
+    else:
+        command = 'SELECT * FROM records WHERE month = %s AND year = %s AND name = %s ORDER BY price DESC LIMIT %s;'
+        columns = ['month', 'year', 'name', 'num']
+
+    args = get_args(info, columns)
+    data = query(command, args)
+    return data

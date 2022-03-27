@@ -22,17 +22,17 @@ class Add(commands.Cog):
             await ctx.send(f'Usage: `$add <price> (date: MM/DD/YYYY)`')
             return
 
+        author = ctx.author.name
+        mention = f'{ctx.author.mention}'
+        msg = await ctx.send(mention)
+        embed = Embed(color=Color.from_rgb(255, 204, 153))
+
         try:
             mega_info = {'price': float(price)}
         except:
             description = f':warning: `{price}` is **NOT** a valid price'
             await send_red_warning(msg, description)
             return
-
-        author = ctx.author.name
-        mention = f'{ctx.author.mention}'
-        msg = await ctx.send(mention)
-        embed = Embed(color=Color.from_rgb(255, 204, 153))
 
         # check the authors
         mega_info['name'] = author

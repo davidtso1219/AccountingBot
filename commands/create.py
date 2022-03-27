@@ -16,7 +16,7 @@ async def create(ctx):
     embed = Embed(color=Color.from_rgb(255, 204, 153))
 
     if author != 'daaviid':
-        await send_red_warning(msg, embed, INVALID_AUTHOR)
+        await send_red_warning(msg, INVALID_AUTHOR)
         return
 
     database.create()
