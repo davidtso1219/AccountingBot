@@ -1,5 +1,6 @@
 discord.py
 flask
+flask_cors
 psycopg2-binary
 python-dotenv
 pytz
