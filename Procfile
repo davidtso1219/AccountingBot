@@ -1,1 +1,1 @@
-web: npm run build && python3 server/bot.py
+web: cd frontend/ && npm run build && cd ../server/ && python3 bot.py
