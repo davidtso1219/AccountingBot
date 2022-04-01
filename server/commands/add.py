@@ -119,7 +119,7 @@ class Add(commands.Cog):
         title = 'Choose categories from the following options'
         color = Color.blue()
         description = ''
-        cats = ['foods', 'transportation', 'entertainment', 'grocery']
+        cats = ['foods', 'transportation', 'entertainment', 'grocery', 'income', 'lending']
         n = len(cats)
 
         for i in range(n):

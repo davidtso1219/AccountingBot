@@ -1,1 +1,1 @@
-web: cd server/ && python3 bot.py
+web: python3 server/bot.py
