@@ -112,7 +112,9 @@ class Add(commands.Cog):
             color = Color.from_rgb(255, 0, 0)
 
         await ctx.send(embed=Embed(title=title, color=color))
-        database.add_expense(**mega_info)
+
+        if correct:
+            database.add_expense(**mega_info)
 
 
     async def get_category(self, ctx):
